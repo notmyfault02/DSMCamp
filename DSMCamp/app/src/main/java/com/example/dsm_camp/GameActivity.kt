@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.example.dsm_camp.model.Fish
 import kotlinx.android.synthetic.main.activity_game.*
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.util.*
 
@@ -24,11 +26,7 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game)
         game_name_tv.text = intent.getStringExtra("username")
         val randomNumber = random.nextInt(10) + 1
-
-        monster = Fish()
-        hp = monster.hp
-        damage = monster.hp / (11 - level)
-
+        abilityUpdate()
 
         game_fish_imv.onClick {
             hp -= damage
@@ -40,13 +38,6 @@ class GameActivity : AppCompatActivity() {
             }
             if (haveExp >= want) {
                 levelUp()
-            }
-            if (level < 9) {
-
-                update()
-            }
-            else {
-
             }
 
         }
@@ -68,14 +59,31 @@ class GameActivity : AppCompatActivity() {
         builder.setTitle("레벨업!")
         Toast.makeText(this, "레벨업!", Toast.LENGTH_SHORT).show()
         level++
-        want+=500
+        want += 500
+        haveExp = 0
+        abilityUpdate()
         update()
         builder.show()
+    }
+
+    fun abilityUpdate() {
+        monster = Fish()
+        hp = monster.hp
+        damage = monster.hp / (11 - level)
     }
 
     fun update() {
         game_level_tv.text = level.toString()
         game_hp_tv.text = hp.toString()
         game_exp_tv.text = haveExp.toString()
+    }
+
+    fun getData(st: String): RequestBody {
+        return RequestBody.create(MediaType.parse("text/plane"), st)
+    }
+
+    override fun onDestroy() {
+        Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+        super.onDestroy()
     }
 }
